@@ -3,17 +3,18 @@ import java.awt.Color;
 import javax.swing.JOptionPane;
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
 
 public class SierpinskiVisualizer extends javax.swing.JFrame {
 
 private static final int SIZE = 512; // should be a power of 2
 private Graphics graphics;
-int i = 0;
+
 	// Colors to display.
 	private static enum COLOR {
 		BLUE(Color.BLUE,"Blue"),
 		RED(Color.RED,"Red"),
-                PINK(Color.PINK,"Pink"),
+                GREEN(Color.GREEN,"Green"),
                 ORANGE(Color.ORANGE,"Orange"),		
 		YELLOW(Color.YELLOW,"Yellow");
 		
@@ -77,7 +78,6 @@ int i = 0;
         canvas.setBackground(java.awt.Color.black);
         canvas.setMaximumSize(new java.awt.Dimension(512, 512));
         canvas.setMinimumSize(new java.awt.Dimension(512, 512));
-        canvas.setPreferredSize(new java.awt.Dimension(512, 512));
 
         jLabel1.setText("Recursive Depth:");
 
@@ -113,6 +113,11 @@ int i = 0;
         drawBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 drawBtnMouseClicked(evt);
+            }
+        });
+        drawBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drawBtnActionPerformed(evt);
             }
         });
 
@@ -195,12 +200,20 @@ int i = 0;
     }// </editor-fold>//GEN-END:initComponents
 
     private void drawBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawBtnMouseClicked
-        
+        if (Integer.parseInt(rDepthText.getText()) > 7){
+            JOptionPane.showMessageDialog(null, "Please enter a recursive depth of 7 or less for stability.","Error",JOptionPane.WARNING_MESSAGE);
+        }
+        else{
         draw();
         i=0;
+        }
     }//GEN-LAST:event_drawBtnMouseClicked
-	// Used to keep track of coloring the triangles correctly.
-        
+
+    private void drawBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_drawBtnActionPerformed
+	
+    // Used to keep track of coloring the triangles correctly.  
 	private Color[] colorScheme = new Color[5];
 	private int depth;
         
@@ -227,7 +240,15 @@ int i = 0;
 		
 		// Generate the color scheme to use.
 		if (randomizeCheckBox.isSelected()) {
-			
+
+                        for (int i=0;i<5;i++){
+                            int seed = (int)((Math.random()*5)+1);
+                            if (seed == 1) colorScheme[i] = COLOR.BLUE.getColor();
+                            else if (seed == 2) colorScheme[i] = COLOR.RED.getColor();
+                            else if (seed == 3) colorScheme[i] = COLOR.GREEN.getColor();
+                            else if (seed == 4) colorScheme[i] = COLOR.YELLOW.getColor();
+                            else if (seed == 5) colorScheme[i] = COLOR.ORANGE.getColor();
+                        } 
 			
 		}
 		else {
@@ -247,15 +268,17 @@ int i = 0;
 		
 		// Draw the base triangle.
 		draw(0,0,0,SIZE);
-		
-		
+
+	
+
 		// Now draw the rest of the inner triangles with the recursive function.
-		draw(depth,0,0,SIZE);
+		if (depth != 0) draw(depth,0,0,SIZE);
+                
 	}    
             
             int[] xPoints = new int[3];
             int[] yPoints = new int[3];
-            
+            int i = 0;
         // Recursive function to draw triangles at a given depth at the specified square given.
 	private void draw(int d, int x, int y, int S) {
 		
@@ -265,13 +288,15 @@ int i = 0;
             yPoints[0] = y+S;
             yPoints[1] = y;
             yPoints[2] = y+S;
-            Polygon p = new Polygon(xPoints,yPoints,3);
-            
+            Polygon p = new Polygon(xPoints,yPoints,3);     
+            graphics.setColor(colorScheme[i]);
+            graphics.fillPolygon(p);
             if (d==0){
-                    
+
                     graphics.setColor(colorScheme[i]);
                     graphics.fillPolygon(p);
-                    i++;
+
+
                     return;
                 }
 		
@@ -281,19 +306,22 @@ int i = 0;
 		// the Graphics object of your Canvas. Make sure you get the color
 		// right!
 		
-                else {
-                    
-                    
-		// Draw the subtriangles. The self-similarity of fractals means
+                else { 
+	
+                // Draw the subtriangles. The self-similarity of fractals means
 		// that they are themselves Sierpinski triangles of depth d-1.
 		// draw top middle triangle
+                i++;
+                i=i%5;
+                int tri = i;
 		draw(d-1, x+S/4, y, S/2);
-		
+                i = tri;
 		// draw bottom left triangle
 		draw(d-1, x, y+S/2, S/2);
-		
+		i = tri;
 		// draw bottom right triangle
 		draw(d-1, x+S/2, y+S/2, S/2);
+
                 }
 	}
     
