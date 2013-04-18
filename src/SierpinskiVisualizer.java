@@ -70,6 +70,7 @@ private Graphics graphics;
         drawBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TRIFORCE");
         setMaximumSize(new java.awt.Dimension(800, 512));
         setMinimumSize(new java.awt.Dimension(800, 512));
         setPreferredSize(new java.awt.Dimension(800, 512));
@@ -200,12 +201,17 @@ private Graphics graphics;
     }// </editor-fold>//GEN-END:initComponents
 
     private void drawBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawBtnMouseClicked
-        if (Integer.parseInt(rDepthText.getText()) > 7){
-            JOptionPane.showMessageDialog(null, "Please enter a recursive depth of 7 or less for stability.","Error",JOptionPane.WARNING_MESSAGE);
+        try{
+        if (Integer.parseInt(rDepthText.getText()) > 7 || Integer.parseInt(rDepthText.getText()) < 0){
+            JOptionPane.showMessageDialog(null, "Please enter a recursive depth of between 0 and 7 for stability.","Error",JOptionPane.WARNING_MESSAGE);
         }
         else{
         draw();
         i=0;
+        }
+        }
+        catch (NumberFormatException nfe){
+            JOptionPane.showMessageDialog(null, "Nice try smart guy, that's not a number.","Error",JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_drawBtnMouseClicked
 
